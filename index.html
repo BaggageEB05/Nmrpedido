@@ -10,16 +10,59 @@
     padding: 0;
     font-family: 'Poppins', Arial, sans-serif;
     background: radial-gradient(circle at top, #ffe6e6, #ffb3c6, #ff80ab);
-    text-align: center;
     color: #fff;
     min-height: 100vh;
     position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Tela de introdução */
+  #intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top, #ffe6e6, #ffb3c6, #ff80ab);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    text-align: center;
+    padding: 20px;
+  }
+  #intro h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  }
+  #startBtn {
+    padding: 15px 40px;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 30px;
+    background: #ff3366;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255,51,102,0.5);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  #startBtn:hover {
+    transform: scale(1.05);
+    background: #ff6699;
+  }
+
+  /* Conteúdo principal */
+  #mainContent {
+    display: none;
+    text-align: center;
   }
   h1 {
-    margin-top: 60px;
+    margin-top: 50px;
     font-size: 2.2rem;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
     padding: 0 10px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
   }
   p {
     font-size: 1.1rem;
@@ -63,6 +106,7 @@
     position: relative;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   }
+
   /* Corações caindo */
   .heart {
     position: fixed;
@@ -81,122 +125,131 @@
 </style>
 </head>
 <body>
-  <!-- Música de fundo -->
   <audio id="bgMusic" loop>
-    <source src="Onze_20 - Pra Você (Áudio).mp3" type="audio/mpeg">
+    <source src="musica.mp3" type="audio/mpeg">
   </audio>
 
-  <h1>Antes de continuares a tua vida...</h1>
-  <p>
+  <!-- Tela de introdução -->
+  <div id="intro">
+    <h1>Tenho algo especial para te dizer... ❤️</h1>
+    <button id="startBtn">Começar</button>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <div id="mainContent">
+    <h1>Antes de continuares a tua vida...</h1>
+    <p>
 Desde que começamos a falar frequentemente não pensei que chegariamos até aqui.
 Mas nos demos muito bem até agora, e eu tenho gostado muito de ti e de falar contigo,
 Por isso que adoraria partilhar contigo uma aventura chamada "nós dois".
 
 Então, minha pergunta é:
-  </p>
+    </p>
 
-  <div class="buttons">
-    <button class="yes" onclick="aceitou()">Queres namorar comigo, Waleskinhaaaa? 💘</button>
-    <button class="no" id="noBtn">Não 😅</button>
+    <div class="buttons">
+      <button class="yes" onclick="aceitou()">Queres namorar comigo, Waleskinhaaaa? 💘</button>
+      <button class="no" id="noBtn">Não 😅</button>
+    </div>
   </div>
 
-  <script>
-    const noBtn = document.getElementById('noBtn');
-    const music = document.getElementById('bgMusic');
+<script>
+  const noBtn = document.getElementById('noBtn');
+  const music = document.getElementById('bgMusic');
+  const intro = document.getElementById('intro');
+  const mainContent = document.getElementById('mainContent');
+  const startBtn = document.getElementById('startBtn');
 
-    // Música ao interagir
-    let musicStarted = false;
-    function startMusic() {
-      if (!musicStarted) {
-        music.play().catch(()=>{});
-        musicStarted = true;
+  // Ao clicar no botão "Começar"
+  startBtn.addEventListener('click', () => {
+    music.play().catch(()=>{});
+    intro.style.display = 'none';
+    mainContent.style.display = 'block';
+  });
+
+  // Botão NÃO foge
+  document.addEventListener('mousemove', (e) => {
+    if (mainContent.style.display !== 'block') return; // só funciona depois de começar
+
+    const rect = noBtn.getBoundingClientRect();
+    const distance = Math.hypot(
+      e.clientX - (rect.left + rect.width / 2),
+      e.clientY - (rect.top + rect.height / 2)
+    );
+
+    if (distance < 120) {
+      const yesBtn = document.querySelector('.yes');
+      const yesRect = yesBtn.getBoundingClientRect();
+
+      const maxX = window.innerWidth - rect.width;
+      const maxY = window.innerHeight - rect.height;
+
+      function isOverlapping(x, y) {
+        const noLeft = x;
+        const noRight = x + rect.width;
+        const noTop = y;
+        const noBottom = y + rect.height;
+
+        const yesLeft = yesRect.left;
+        const yesRight = yesRect.right;
+        const yesTop = yesRect.top;
+        const yesBottom = yesRect.bottom;
+
+        return !(noRight + 20 < yesLeft || noLeft - 20 > yesRight ||
+                 noBottom + 20 < yesTop || noTop - 20 > yesBottom);
       }
+
+      let newX, newY;
+      let attempts = 0;
+      do {
+        newX = Math.random() * maxX;
+        newY = Math.random() * maxY;
+        attempts++;
+        if (attempts > 100) break;
+      } while (isOverlapping(newX, newY));
+
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = `${newX}px`;
+      noBtn.style.top = `${newY}px`;
+      noBtn.style.transform = 'none';
     }
-    document.addEventListener('click', startMusic);
-    document.addEventListener('touchstart', startMusic); // suporte iPhone
+  });
 
+  // Corações caindo
+  function createHeart() {
+    if (mainContent.style.display !== 'block') return;
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.innerHTML = '❤️';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.fontSize = (15 + Math.random() * 25) + 'px';
+    heart.style.animationDuration = (4 + Math.random() * 3) + 's';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+  }
+  setInterval(createHeart, 300);
 
-    // Fuga do botão NÃO
-    document.addEventListener('mousemove', (e) => {
-      const rect = noBtn.getBoundingClientRect();
-      const distance = Math.hypot(
-        e.clientX - (rect.left + rect.width / 2),
-        e.clientY - (rect.top + rect.height / 2)
-      );
-
-      if (distance < 120) {
-        const yesBtn = document.querySelector('.yes');
-        const yesRect = yesBtn.getBoundingClientRect();
-
-        const maxX = window.innerWidth - rect.width;
-        const maxY = window.innerHeight - rect.height;
-
-        function isOverlapping(x, y) {
-          const noLeft = x;
-          const noRight = x + rect.width;
-          const noTop = y;
-          const noBottom = y + rect.height;
-
-          const yesLeft = yesRect.left;
-          const yesRight = yesRect.right;
-          const yesTop = yesRect.top;
-          const yesBottom = yesRect.bottom;
-
-          return !(noRight + 20 < yesLeft || noLeft - 20 > yesRight ||
-                   noBottom + 20 < yesTop || noTop - 20 > yesBottom);
-        }
-
-        let newX, newY;
-        let attempts = 0;
-        do {
-          newX = Math.random() * maxX;
-          newY = Math.random() * maxY;
-          attempts++;
-          if (attempts > 100) break;
-        } while (isOverlapping(newX, newY));
-
-        noBtn.style.position = 'fixed';
-        noBtn.style.left = `${newX}px`;
-        noBtn.style.top = `${newY}px`;
-        noBtn.style.transform = 'none';
-      }
-    });
-
-    // Corações
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      heart.innerHTML = '❤️';
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.fontSize = (15 + Math.random() * 25) + 'px';
-      heart.style.animationDuration = (4 + Math.random() * 3) + 's';
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 7000);
-    }
-    setInterval(createHeart, 300);
-
-    // Pop-up quando aceita
-    function aceitou() {
-      const overlay = document.createElement('div');
-      overlay.style.position = 'fixed';
-      overlay.style.top = 0;
-      overlay.style.left = 0;
-      overlay.style.width = '100%';
-      overlay.style.height = '100%';
-      overlay.style.background = 'rgba(0,0,0,0.7)';
-      overlay.style.display = 'flex';
-      overlay.style.justifyContent = 'center';
-      overlay.style.alignItems = 'center';
-      overlay.style.zIndex = 999;
-      overlay.innerHTML = `
-        <div style="background:white; color:#ff3366; padding:30px; border-radius:20px; font-size:1.5rem; text-align:center; max-width:400px;">
-          <h2>Yeeesss! ❤️</h2>
-          <p>Agora somos oficialmente namorados!<br>
-          Obrigado por fazeres parte da minha vida.</p>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-    }
-  </script>
+  // Pop-up quando aceita
+  function aceitou() {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = 0;
+    overlay.style.left = 0;
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.7)';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = 999;
+    overlay.innerHTML = `
+      <div style="background:white; color:#ff3366; padding:30px; border-radius:20px; font-size:1.5rem; text-align:center; max-width:400px;">
+        <h2>Yeeesss! ❤️</h2>
+        <p>Agora somos oficialmente namorados!<br>
+        Obrigado por fazeres parte da minha vida.</p>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+</script>
 </body>
 </html>
