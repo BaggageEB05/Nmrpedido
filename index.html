@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quero te perguntar algo... ❤️</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    background: radial-gradient(circle at top, #ffe6e6, #ffb3c6, #ff80ab);
+    text-align: center;
+    color: #fff;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+  h1 {
+    margin-top: 80px;
+    font-size: 3rem;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  }
+  p {
+    font-size: 1.3rem;
+    max-width: 700px;
+    margin: 20px auto;
+    line-height: 1.6;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
+    white-space: pre-line;
+  }
+  .buttons {
+    margin-top: 30px;
+    position: relative;
+    z-index: 10;
+  }
+  button {
+    padding: 15px 30px;
+    margin: 10px;
+    font-size: 1.4rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+  }
+  .yes {
+    background: #ff3366;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 51, 102, 0.5);
+  }
+  .yes:hover {
+    transform: scale(1.1);
+    background: #ff6699;
+  }
+  .no {
+    background-color: #fff;
+    color: #ff3366;
+    position: fixed;
+    left: 60%;
+    top: 60%;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  /* Corações caindo */
+  .heart {
+    position: fixed;
+    top: -20px;
+    color: rgba(255,255,255,0.8);
+    font-size: 20px;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to {
+      transform: translateY(110vh);
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+  <!-- Música de fundo -->
+  <audio id="bgMusic" loop>
+    <source src="Onze_20 - Pra Você (Áudio).mp3" type="audio/mpeg">
+  </audio>
+
+  <h1>Antes de continuares a tua vida...</h1>
+  <p>
+Desde o momento em que te conheci, o meu mundo ficou mais bonito.
+Quero partilhar contigo uma aventura chamada "nós dois".
+
+Então, minha pergunta é:
+  </p>
+
+  <div class="buttons">
+    <button class="yes" onclick="aceitou()">Queres namorar comigo? 💘</button>
+    <button class="no" id="noBtn">Não 😅</button>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const music = document.getElementById('bgMusic');
+
+    // Iniciar música na primeira interação
+    let musicStarted = false;
+    function startMusic() {
+      if (!musicStarted) {
+        music.play().catch(()=>{});
+        musicStarted = true;
+      }
+    }
+    document.addEventListener('click', startMusic);
+    document.addEventListener('mousemove', startMusic);
+
+    // Botão "não" foge
+    document.addEventListener('mousemove', (e) => {
+      const rect = noBtn.getBoundingClientRect();
+      const distance = Math.hypot(
+        e.clientX - (rect.left + rect.width / 2),
+        e.clientY - (rect.top + rect.height / 2)
+      );
+
+      if (distance < 120) {
+        const maxX = window.innerWidth - rect.width;
+        const maxY = window.innerHeight - rect.height;
+        const newX = Math.random() * maxX;
+        const newY = Math.random() * maxY;
+        noBtn.style.left = `${newX}px`;
+        noBtn.style.top = `${newY}px`;
+      }
+    });
+
+    // Corações a cair continuamente
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.innerHTML = '❤️';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = (15 + Math.random() * 25) + 'px';
+      heart.style.animationDuration = (4 + Math.random() * 3) + 's';
+      document.body.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 7000);
+    }
+    setInterval(createHeart, 300);
+
+    // Pop-up quando aceita
+    function aceitou() {
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.background = 'rgba(0,0,0,0.7)';
+      overlay.style.display = 'flex';
+      overlay.style.justifyContent = 'center';
+      overlay.style.alignItems = 'center';
+      overlay.style.zIndex = 999;
+      overlay.innerHTML = `
+        <div style="background:white; color:#ff3366; padding:30px; border-radius:20px; font-size:1.5rem; text-align:center; max-width:400px;">
+          <h2>Yeeesss! ❤️</h2>
+          <p>Agora somos oficialmente namorados!<br>
+          Obrigado por fazeres parte da minha vida.</p>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+  </script>
+</body>
+</html>
