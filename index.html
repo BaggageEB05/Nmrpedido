@@ -12,18 +12,18 @@
     background: radial-gradient(circle at top, #ffe6e6, #ffb3c6, #ff80ab);
     text-align: center;
     color: #fff;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     position: relative;
   }
   h1 {
-    margin-top: 80px;
-    font-size: 3rem;
+    margin-top: 60px;
+    font-size: 2.2rem;
     text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    padding: 0 10px;
   }
   p {
-    font-size: 1.3rem;
-    max-width: 700px;
+    font-size: 1.1rem;
+    max-width: 90%;
     margin: 20px auto;
     line-height: 1.6;
     text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
@@ -33,11 +33,16 @@
     margin-top: 30px;
     position: relative;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 50px;
   }
   button {
-    padding: 15px 30px;
-    margin: 10px;
-    font-size: 1.4rem;
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    max-width: 90%;
     border: none;
     border-radius: 30px;
     cursor: pointer;
@@ -49,17 +54,13 @@
     box-shadow: 0 4px 15px rgba(255, 51, 102, 0.5);
   }
   .yes:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
     background: #ff6699;
   }
   .no {
     background-color: #fff;
     color: #ff3366;
-    position: absolute; /* agora segue a posição do container */
-    left: 50%;
-    transform: translateX(-50%);
-    top: 100%; /* embaixo do botão sim */
-    margin-top: 20px;
+    position: relative;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   }
   /* Corações caindo */
@@ -69,6 +70,7 @@
     color: rgba(255,255,255,0.8);
     font-size: 20px;
     animation: fall linear forwards;
+    pointer-events: none;
   }
   @keyframes fall {
     to {
@@ -102,7 +104,7 @@ Então, minha pergunta é:
     const noBtn = document.getElementById('noBtn');
     const music = document.getElementById('bgMusic');
 
-    // Iniciar música na primeira interação
+    // Música ao interagir
     let musicStarted = false;
     function startMusic() {
       if (!musicStarted) {
@@ -113,7 +115,7 @@ Então, minha pergunta é:
     document.addEventListener('click', startMusic);
     document.addEventListener('mousemove', startMusic);
 
-    // Botão "não" foge sem colidir com o botão "Sim"
+    // Fuga do botão NÃO
     document.addEventListener('mousemove', (e) => {
       const rect = noBtn.getBoundingClientRect();
       const distance = Math.hypot(
@@ -152,7 +154,6 @@ Então, minha pergunta é:
           if (attempts > 100) break;
         } while (isOverlapping(newX, newY));
 
-        // agora usamos position fixed para movimentar
         noBtn.style.position = 'fixed';
         noBtn.style.left = `${newX}px`;
         noBtn.style.top = `${newY}px`;
@@ -160,7 +161,7 @@ Então, minha pergunta é:
       }
     });
 
-    // Corações a cair continuamente
+    // Corações
     function createHeart() {
       const heart = document.createElement('div');
       heart.classList.add('heart');
@@ -169,7 +170,6 @@ Então, minha pergunta é:
       heart.style.fontSize = (15 + Math.random() * 25) + 'px';
       heart.style.animationDuration = (4 + Math.random() * 3) + 's';
       document.body.appendChild(heart);
-
       setTimeout(() => heart.remove(), 7000);
     }
     setInterval(createHeart, 300);
