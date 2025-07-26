@@ -113,7 +113,8 @@ Então, minha pergunta é:
       }
     }
     document.addEventListener('click', startMusic);
-    document.addEventListener('mousemove', startMusic);
+    document.addEventListener('touchstart', startMusic); // suporte iPhone
+
 
     // Fuga do botão NÃO
     document.addEventListener('mousemove', (e) => {
