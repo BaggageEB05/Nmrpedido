@@ -55,9 +55,11 @@
   .no {
     background-color: #fff;
     color: #ff3366;
-    position: fixed;
-    left: 60%;
-    top: 60%;
+    position: absolute; /* agora segue a posição do container */
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%; /* embaixo do botão sim */
+    margin-top: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   }
   /* Corações caindo */
@@ -111,7 +113,7 @@ Então, minha pergunta é:
     document.addEventListener('click', startMusic);
     document.addEventListener('mousemove', startMusic);
 
-    // Botão "não" foge
+    // Botão "não" foge sem colidir com o botão "Sim"
     document.addEventListener('mousemove', (e) => {
       const rect = noBtn.getBoundingClientRect();
       const distance = Math.hypot(
@@ -120,12 +122,41 @@ Então, minha pergunta é:
       );
 
       if (distance < 120) {
+        const yesBtn = document.querySelector('.yes');
+        const yesRect = yesBtn.getBoundingClientRect();
+
         const maxX = window.innerWidth - rect.width;
         const maxY = window.innerHeight - rect.height;
-        const newX = Math.random() * maxX;
-        const newY = Math.random() * maxY;
+
+        function isOverlapping(x, y) {
+          const noLeft = x;
+          const noRight = x + rect.width;
+          const noTop = y;
+          const noBottom = y + rect.height;
+
+          const yesLeft = yesRect.left;
+          const yesRight = yesRect.right;
+          const yesTop = yesRect.top;
+          const yesBottom = yesRect.bottom;
+
+          return !(noRight + 20 < yesLeft || noLeft - 20 > yesRight ||
+                   noBottom + 20 < yesTop || noTop - 20 > yesBottom);
+        }
+
+        let newX, newY;
+        let attempts = 0;
+        do {
+          newX = Math.random() * maxX;
+          newY = Math.random() * maxY;
+          attempts++;
+          if (attempts > 100) break;
+        } while (isOverlapping(newX, newY));
+
+        // agora usamos position fixed para movimentar
+        noBtn.style.position = 'fixed';
         noBtn.style.left = `${newX}px`;
         noBtn.style.top = `${newY}px`;
+        noBtn.style.transform = 'none';
       }
     });
 
